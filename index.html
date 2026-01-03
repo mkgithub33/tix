@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=428, user-scalable=no">
+    <title>iPhone Background Overlay</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* Fixed Canvas Size */
+        #canvas {
+            width: 428px;
+            height: 926px;
+            position: relative;
+            background-color: #000;
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+        }
+
+        /* Upload Prompt Overlay */
+        #upload-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        input[type="file"] {
+            padding: 20px;
+            color: white;
+            font-size: 18px;
+        }
+
+        /* Universal Text Styling */
+        .data-text {
+            position: absolute;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            font-size: 21.5px;
+            color: white; /* Change to black if your background image is light */
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="canvas">
+        <div id="upload-overlay">
+            <input type="file" id="imageInput" accept="image/*">
+            <p style="color: white; font-family: sans-serif;">Select iPhone Photo</p>
+        </div>
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const uploadOverlay = document.getElementById('upload-overlay');
+        const canvas = document.getElementById('canvas');
+
+        imageInput.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(event) {
+                    // Set the background
+                    canvas.style.backgroundImage = `url(${event.target.result})`;
+                    
+                    // Remove the upload prompt
+                    uploadOverlay.remove();
+
+                    // Delay prompts slightly to allow background to render
+                    setTimeout(() => {
+                        const section = prompt("Input the SECTION text:");
+                        const row = prompt("Input the ROW text:");
+                        const seat = prompt("Input the SEAT text:");
+                        const entryInfo = prompt("Input the ENTRY INFO text:");
+                        const additionalInfo = prompt("Input the ADDITIONAL INFO text:");
+
+                        // Add SECTION
+                        addText(section, { bottom: '557px', left: '30px' });
+
+                        // Add ROW
+                        addText(row, { bottom: '557px', left: '210.5px' });
+
+                        // Add SEAT (Right Justified)
+                        addText(seat, { bottom: '557px', right: '31px', textAlign: 'right' });
+
+                        // Add ENTRY INFO
+                        addText(entryInfo, { bottom: '508.5px', left: '30px' });
+
+                        // Add ADDITIONAL INFO (Right Justified)
+                        addText(additionalInfo, { bottom: '508.5px', right: '31px', textAlign: 'right' });
+                    }, 100);
+                };
+
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        function addText(val, styles) {
+            if (val === null || val === "") return;
+            const div = document.createElement('div');
+            div.className = 'data-text';
+            div.innerText = val;
+            
+            // Apply positioning
+            if (styles.bottom) div.style.bottom = styles.bottom;
+            if (styles.left) div.style.left = styles.left;
+            if (styles.right) div.style.right = styles.right;
+            if (styles.textAlign) div.style.textAlign = styles.textAlign;
+            
+            canvas.appendChild(div);
+        }
+    </script>
+</body>
+</html>
